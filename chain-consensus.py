@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 # Define the IP addresses to fetch the blockchain length from
-ip_addresses = ['https://utils.blocknet.org/xrs/heights', 'http://149.102.153.235/xrs/heights']
+ip_addresses = ['https://utils.blocknet.org/xrs/heights', 'http://194.163.143.68/xrs/heights']
 
 
 while True:
