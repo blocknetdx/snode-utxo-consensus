@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 # Define the IP addresses to fetch the blockchain length from
-ip_addresses = ['https://utils.blocknet.org/xrs/heights', 'http://fat-cake/xrs/heights']
+ip_addresses = ['https://utils.blocknet.org/xrs/heights', 'http://149.102.153.235/xrs/heights']
 
 
 while True:
@@ -12,7 +12,7 @@ while True:
     blockchain_lengths = {}
     for ip in ip_addresses:
         try:
-            response = requests.get(ip, timeout=5)
+            response = requests.get(ip, timeout=20)
             blockchain_length = response.json()
             blockchain_lengths[ip] = blockchain_length
         except requests.exceptions.RequestException as e:
@@ -36,16 +36,32 @@ while True:
             match = False
             faulty_nodes.append(ip)
     if match:
-        print("All blockchain lengths match!")
+        print("success")
     else:
-        print("Blockchain lengths do not match.")
+        print("Warning: some Blockchain lengths do not match.")
         print(f"Faulty nodes: {faulty_nodes}")
+        
         # Resolve disputes by taking the majority of responses as the correct one
+        # resolved_data = {}
+        # for key, value in blockchain_lengths[ip_addresses[0]].items():
+        #     values = [blockchain_lengths[ip][key] for ip in ip_addresses if blockchain_lengths[ip] is not None]
+        #     resolved_data[key] = max(set(values), key=values.count)
+        # print(f"Resolved data: {resolved_data}")
+
+        # Get the keys of all json outputs
+        all_keys = set().union(*(d.keys() for d in blockchain_lengths.values() if d is not None))
+
+        # Initialize the resolved data dictionary
         resolved_data = {}
-        for key, value in blockchain_lengths[ip_addresses[0]].items():
-            values = [blockchain_lengths[ip][key] for ip in ip_addresses if blockchain_lengths[ip] is not None]
+
+        # Iterate through all keys
+        for key in all_keys:
+            values = [blockchain_lengths[ip][key] if key in blockchain_lengths[ip] else None for ip in ip_addresses if blockchain_lengths[ip] is not None]
+            # Determine the majority value for this key
             resolved_data[key] = max(set(values), key=values.count)
-        print(f"Resolved data: {resolved_data}")
+
+        print(f"Chain data: {resolved_data}")
+
 
     # Save data to log file
     data = {
