@@ -42,16 +42,13 @@ def fake_data():
 def getblockhash(ip, coin, blockcount):
     url = ip + "xr/" + coin + "/xrgetblockhash"
     try:
-        response = requests.post(url, json=[blockcount], timeout=30)
-        test = response.json()
+        result = requests.post(url, json=[blockcount], timeout=30).json()
     except requests.exceptions.JSONDecodeError as e:
         result = None
         print(f"Failed to parse JSON from {url}. Error: {e}")
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         result = None
         print(f"Failed to get data from {url}. Error: {e}")
-    else:
-        result = None
     return result
 
 
